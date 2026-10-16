@@ -1229,6 +1229,10 @@ function saveDraft(){
 let PROJ = [];
 let PROJ_LOADED = false;
 const clone = p => Object.assign({}, p, {s: Object.assign({}, p.s)});
+/* Project ids are also HTML attributes and URL segments, so they are kept to
+   this shape (the server enforces the same rule). */
+const ID_OK = /^[A-Za-z0-9_-]{1,64}$/;
+const newId = () => "p" + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
 function loadAll(){ return PROJ.map(clone); }
 function writeAll(list){
   const before = new Map(PROJ.map(p => [p.id, p]));
@@ -1355,13 +1359,13 @@ function renderProjects(){
     return `<div class="proj-card${pr.id === activeId ? " is-active" : ""}">
       <div class="proj-card__body">
         <div><span class="proj-card__name">${esc(pr.name)}</span>
-             <span class="proj-card__meta"> &middot; ${when}${pr.rep ? " &middot; " + esc(pr.rep) : ""}</span></div>
+             <span class="proj-card__meta"> &middot; ${esc(when)}${pr.rep ? " &middot; " + esc(pr.rep) : ""}</span></div>
         <div class="proj-card__line">${head}</div>
         <div class="proj-card__line">${line}</div>
       </div>
       <div class="proj-card__acts">
-        <button class="pci-btn pci-btn--secondary" type="button" data-load="${pr.id}">Load</button>
-        <button class="pci-btn ${pr.id === pendingDel ? "pci-btn--danger" : "pci-btn--ghost"}" type="button" data-del="${pr.id}">${pr.id === pendingDel ? "Sure?" : "Delete"}</button>
+        <button class="pci-btn pci-btn--secondary" type="button" data-load="${esc(pr.id)}">Load</button>
+        <button class="pci-btn ${pr.id === pendingDel ? "pci-btn--danger" : "pci-btn--ghost"}" type="button" data-del="${esc(pr.id)}">${pr.id === pendingDel ? "Sure?" : "Delete"}</button>
       </div></div>`;
   }).join("");
 }
@@ -1386,7 +1390,7 @@ function saveProject(){
 
   const list = loadAll();
   const i    = list.findIndex(pr => pr.name.toLowerCase() === name.toLowerCase());
-  const rec  = { id: (i >= 0 ? list[i].id : "p" + Date.now().toString(36) + Math.random().toString(36).slice(2,6)),
+  const rec  = { id: (i >= 0 ? list[i].id : newId()),
                  name, at: Date.now(), v: VER, s: readState() };
   if (i >= 0) list[i] = rec; else list.unshift(rec);
   list.sort((a,b) => b.at - a.at);
@@ -1536,14 +1540,24 @@ function parseFile(text){
   return d.projects.filter(p => p && p.name && p.s);
 }
 
-/* Merge on the project name, the same identity Save uses. Newest wins. */
+/* Merge on the project name, the same identity Save uses. Newest wins.
+   A file is untrusted input: only the known fields are kept, and an id that
+   is not the toolkit's own shape (or is already another project's) is
+   replaced with a fresh one. */
 function mergeIn(incoming){
   const list = loadAll();
   const byName = new Map(list.map(p => [p.name.trim().toLowerCase(), p]));
+  const ids = new Set(list.map(p => p.id));
   let added = 0, updated = 0, same = 0;
-  incoming.forEach(p => {
-    const k = p.name.trim().toLowerCase(), cur = byName.get(k);
-    if (!cur){ list.push(p); byName.set(k, p); added++; }
+  incoming.forEach(raw => {
+    const p = {
+      id: (typeof raw.id === "string" && ID_OK.test(raw.id) && !ids.has(raw.id)) ? raw.id : newId(),
+      name: String(raw.name).trim().slice(0, 60), at: Number(raw.at) || 0,
+      v: String(raw.v || "").slice(0, 10), s: Object.assign({}, raw.s)
+    };
+    if (!p.name) return;
+    const k = p.name.toLowerCase(), cur = byName.get(k);
+    if (!cur){ list.push(p); byName.set(k, p); ids.add(p.id); added++; }
     else if ((p.at || 0) > (cur.at || 0)){ Object.assign(cur, p, {id: cur.id}); updated++; }
     else same++;
   });
@@ -1797,7 +1811,7 @@ function buildPrintSheet(){
   const rep = NGU_USER ? NGU_USER.name : "";
   const name = el("projName").value.trim() || "Unnamed project";
   const logo = (document.querySelector(".pci-logo--light") || {}).src || "";
-  const txt = id => el(id).textContent.replace(/\s+/g, " ").trim();
+  const txt = id => esc(el(id).textContent.replace(/\s+/g, " ").trim());
   const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
 
   let body;
@@ -1860,7 +1874,7 @@ function buildPrintSheet(){
 
   el("printSheet").innerHTML = `
     <div class="ps-head">
-      ${logo ? `<img src="${logo}" alt="PCI Gases">` : ""}
+      ${logo ? `<img src="${esc(logo)}" alt="PCI Gases">` : ""}
       <div class="ps-title"><h1>NGU Type-X Spec Sheet</h1>
         <p>${rep ? "Prepared by " + esc(rep) + " &middot; " : ""}${date}</p></div>
     </div>

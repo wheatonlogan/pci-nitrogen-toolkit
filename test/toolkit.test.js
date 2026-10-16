@@ -180,6 +180,43 @@ test("projects: an offline projects file imports into the team list", opts, asyn
   await ctx.close();
 });
 
+const writeProjectsFile = (projects) => {
+  const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "ngu-")), "NGU Projects.json");
+  fs.writeFileSync(file, JSON.stringify({ format: "pci.ngu.projects", version: 1, app: "1.6", exported: new Date().toISOString(), projects }));
+  return file;
+};
+const okState = { inFlow: "90", inPurity: "97", inPsi: "135", inAir: "pci", inGp: "30", iLin: "", iKwh: "", iHrs: "168", iCap: "", capTouched: false };
+
+test("projects: an imported file cannot inject markup through a project id", opts, async () => {
+  const evil = 'x"><img src=x onerror="window.__pwned=1">';
+  const file = writeProjectsFile([
+    { id: evil, name: "Evil Id Co", at: Date.now(), v: "1.6", s: okState },
+    { id: "seed-katrium", name: "Id Clash Co", at: Date.now(), v: "1.6", s: okState },
+  ]);
+  const { ctx, page, errors } = await rep("Avery Rep", "avery@pcigases.com");
+  await page.click("#tab3");
+  await page.waitForSelector(".proj-card");
+  await page.setInputFiles("#pfileInput", file);
+  await page.locator(".proj-card", { hasText: "Evil Id Co" }).waitFor();
+  await page.evaluate(() => syncChain);
+  await page.waitForTimeout(300);
+  assert.equal(await page.evaluate(() => window.__pwned), undefined);
+  assert.equal(await page.locator("#projList img").count(), 0);
+  const ids = await page.locator("#projList [data-load]").evaluateAll((bs) => bs.map((b) => b.getAttribute("data-load")));
+  assert.ok(ids.every((id) => /^[A-Za-z0-9_-]{1,64}$/.test(id)), `unexpected ids: ${ids}`);
+
+  const saved = await srv.db.listProjects();
+  const imported = saved.find((p) => p.name === "Evil Id Co");
+  assert.ok(imported, "the project itself still imports");
+  assert.match(imported.id, /^p[a-z0-9]+$/);
+  // An id already used by another project is regenerated too, so the import does not overwrite it.
+  assert.equal(saved.find((p) => p.id === "seed-katrium").name, "Katrium Chemical");
+  assert.ok(saved.some((p) => p.name === "Id Clash Co" && p.id !== "seed-katrium"));
+  assert.deepEqual(errors, []);
+  for (const p of saved.filter((p) => ["Evil Id Co", "Id Clash Co"].includes(p.name))) await srv.db.deleteProject(p.id);
+  await ctx.close();
+});
+
 test("sizing log: one entry per settled sizing, one per save", opts, async () => {
   await srv.db.pool.query("DELETE FROM ngu_sizing_events");
   const { ctx, page } = await rep("Casey Rep", "casey@pcigases.com");

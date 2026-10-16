@@ -84,6 +84,11 @@ test("bad project payloads are refused", opts, async () => {
   assert.equal((await call("/api/projects/ok1", { method: "PUT", body: JSON.stringify({ name: "X" }) })).status, 400);
   assert.equal((await call("/api/projects/bad%20id!", { method: "PUT", body: JSON.stringify({ name: "X", s: {} }) })).status, 400);
   assert.equal((await call("/api/projects/ok1", { method: "PUT", body: "not json" })).status, 400);
+  const evil = encodeURIComponent('x"><img src=x onerror="window.__pwned=1">');
+  const s = { inFlow: "100", inPurity: "97", inPsi: "135" };
+  const r = await call("/api/projects/" + evil, { method: "PUT", body: JSON.stringify({ name: "Evil", s }) });
+  assert.equal(r.status, 400);
+  assert.equal((await call("/api/projects/" + "a".repeat(65), { method: "PUT", body: JSON.stringify({ name: "Long", s }) })).status, 400);
 });
 
 test("sizing events are logged with the rep and export as CSV", opts, async () => {
