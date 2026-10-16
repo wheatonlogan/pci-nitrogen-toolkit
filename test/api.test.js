@@ -1,13 +1,12 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import path from "node:path";
-import { startServer, signIn, skipNoDb, ROOT } from "./helpers.js";
+import { startServer, signIn, ROOT } from "./helpers.js";
 
 let srv, cookie;
-const opts = { skip: skipNoDb };
+const opts = {};
 
 before(async () => {
-  if (skipNoDb) return;
   srv = await startServer();
   cookie = (await signIn(srv.base)).cookie;
 });
@@ -85,6 +84,30 @@ test("bad project payloads are refused", opts, async () => {
   assert.equal((await call("/api/projects/ok1", { method: "PUT", body: JSON.stringify({ name: "X" }) })).status, 400);
   assert.equal((await call("/api/projects/bad%20id!", { method: "PUT", body: JSON.stringify({ name: "X", s: {} }) })).status, 400);
   assert.equal((await call("/api/projects/ok1", { method: "PUT", body: "not json" })).status, 400);
+  const evil = encodeURIComponent('x"><img src=x onerror="window.__pwned=1">');
+  const s = { inFlow: "100", inPurity: "97", inPsi: "135" };
+  const r = await call("/api/projects/" + evil, { method: "PUT", body: JSON.stringify({ name: "Evil", s }) });
+  assert.equal(r.status, 400);
+  assert.equal((await call("/api/projects/" + "a".repeat(65), { method: "PUT", body: JSON.stringify({ name: "Long", s }) })).status, 400);
+});
+
+test("project inputs are checked against what the toolkit offers", async () => {
+  const s = { inFlow: "120", inPurity: "98", inPsi: "135", inAir: "pci", inGp: "30", iLin: "90000", iKwh: "0.08", iHrs: "168", iCap: "", capTouched: false };
+  const put = (id, body) => call("/api/projects/" + id, { method: "PUT", body: JSON.stringify(body) });
+
+  const bad = await put("v1", { name: "Bad Psi Co", s: { ...s, inPsi: "150" } });
+  assert.equal(bad.status, 400);
+  assert.deepEqual(await bad.json(), { error: "inPsi must be one of 125, 135, 175, 200" });
+  assert.equal((await put("v1", { name: "Bad Flow Co", s: { ...s, inFlow: "abc" } })).status, 400);
+  assert.equal((await put("v1", { name: "Bad Air Co", s: { ...s, inAir: "<b>" } })).status, 400);
+  assert.equal((await put("v1", { name: "No Psi Co", s: { inFlow: "100", inPurity: "97" } })).status, 400);
+
+  const ok = await put("v1", { name: "Legit Co", at: 3000, v: "1.7", s });
+  assert.equal(ok.status, 200);
+  assert.deepEqual((await ok.json()).project.s, s);
+  const names = (await (await call("/api/projects")).json()).projects.map((p) => p.name);
+  assert.ok(names.includes("Legit Co") && !names.some((n) => /^Bad|^No Psi/.test(n)));
+  assert.equal((await call("/api/projects/v1", { method: "DELETE" })).status, 200);
 });
 
 test("sizing events are logged with the rep and export as CSV", opts, async () => {

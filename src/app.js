@@ -11,11 +11,57 @@ const pub = (f) => path.join(ROOT, "public", f);
 const STATE_KEYS = ["inFlow", "inPurity", "inPsi", "inAir", "inGp", "iLin", "iKwh", "iHrs", "iCap", "capTouched"];
 const ID = /^[A-Za-z0-9_-]{1,64}$/;
 
+/**
+ * What the toolkit's inputs offer (public/toolkit.html): the <select> options, and
+ * [min, max] for the number boxes. Where the page sets min/max these match it; the rest
+ * are sanity bounds. The page keeps its own copy (STATE_RANGES) and the tests check all three agree.
+ */
+export const STATE_CHOICES = {
+  inPurity: ["95", "96", "97", "98", "99", "99.5"],
+  inPsi: ["125", "135", "175", "200"],
+  inAir: ["pci", "cust"],
+};
+export const STATE_RANGES = {
+  inFlow: [0, 100000],
+  inGp: [0, 80],
+  iLin: [0, 100000000],
+  iKwh: [0, 10],
+  iHrs: [1, 168],
+  iCap: [0, 100000000],
+};
+const REQUIRED = ["inFlow", "inPurity", "inPsi"];
+
+/** Why a project's saved inputs are not ones the toolkit offers, or null when they are. */
+export function stateProblem(st) {
+  if (!st || typeof st !== "object" || Array.isArray(st)) return "missing inputs";
+  for (const k of REQUIRED) if (st[k] === undefined) return `${k} is required`;
+  for (const [k, opts] of Object.entries(STATE_CHOICES)) {
+    const v = st[k];
+    if (v === undefined) continue;
+    if ((typeof v !== "string" && typeof v !== "number") || !opts.includes(String(v)))
+      return `${k} must be one of ${opts.join(", ")}`;
+  }
+  for (const [k, [lo, hi]] of Object.entries(STATE_RANGES)) {
+    const v = st[k];
+    if (v === undefined || v === "") continue;
+    const n = typeof v === "number" || (typeof v === "string" && v.trim() !== "") ? Number(v) : NaN;
+    if (!Number.isFinite(n) || n < lo || n > hi) return `${k} must be a number from ${lo} to ${hi}`;
+  }
+  return null;
+}
+
+/** Why a toolkit project record cannot be saved, or null when it can. */
+export function projectProblem(id, body) {
+  if (!ID.test(id || "")) return "invalid project id";
+  if (!body || typeof body !== "object") return "invalid project";
+  if (!String(body.name ?? "").trim()) return "project name is required";
+  return stateProblem(body.s);
+}
+
 /** Accepts a toolkit project record and returns a clean copy, or null. */
 export function cleanProject(id, body) {
-  if (!ID.test(id || "") || !body || typeof body !== "object") return null;
-  const name = String(body.name ?? "").trim().slice(0, 60);
-  if (!name || !body.s || typeof body.s !== "object") return null;
+  if (projectProblem(id, body)) return null;
+  const name = String(body.name).trim().slice(0, 60);
   const s = {};
   for (const k of STATE_KEYS) {
     if (k === "capTouched") s[k] = !!body.s[k];
@@ -91,8 +137,10 @@ export function createApp(db) {
   api.get("/projects", async (c) => c.json({ projects: await db.listProjects() }));
 
   api.put("/projects/:id", async (c) => {
-    const p = cleanProject(c.req.param("id"), await c.req.json().catch(() => null));
-    if (!p) return c.json({ error: "invalid project" }, 400);
+    const id = c.req.param("id"), body = await c.req.json().catch(() => null);
+    const problem = projectProblem(id, body);
+    if (problem) return c.json({ error: problem }, 400);
+    const p = cleanProject(id, body);
     const r = await db.saveProject(p, c.get("user"));
     if (r.conflict) return c.json({ error: "name taken", name: r.conflict }, 409);
     return c.json({ project: r.project });
