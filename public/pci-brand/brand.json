@@ -1,0 +1,670 @@
+{
+  "_about": "PCI Gases brand kit \u2014 one machine-readable source for every medium: web apps, Elementor JSON, PowerPoint, PDF/print and documents. Supersedes and merges PCI-COLLATERAL-GENERATOR/pci-brand-kit.json v1.0.0. Source of truth for colour is PCI Brand Color Guidelines (Jun 2026); hex is authoritative, CMYK is FOGRA39-derived.",
+  "version": "2.0.0",
+  "updated": "2026-09-21",
+  "colors": {
+    "cobalt": {
+      "name": "Cobalt",
+      "hex": "#192F92",
+      "rgb": [
+        25,
+        47,
+        146
+      ],
+      "cmyk": [
+        99,
+        90,
+        0,
+        4
+      ],
+      "role": "primary",
+      "css_var": "--pci-cobalt-blue",
+      "elementor_global_id": "primary"
+    },
+    "white": {
+      "name": "White",
+      "hex": "#FFFFFF",
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "cmyk": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "role": "primary",
+      "css_var": "--pci-white",
+      "elementor_global_id": "6a9e539"
+    },
+    "tech_blue": {
+      "name": "Tech Blue",
+      "hex": "#1E48E8",
+      "rgb": [
+        30,
+        72,
+        232
+      ],
+      "cmyk": [
+        89,
+        75,
+        0,
+        0
+      ],
+      "role": "secondary",
+      "css_var": "--pci-tech-blue",
+      "elementor_global_id": "secondary"
+    },
+    "silver": {
+      "name": "Silver",
+      "hex": "#EBEAE9",
+      "rgb": [
+        235,
+        234,
+        233
+      ],
+      "cmyk": [
+        0,
+        0,
+        0,
+        8
+      ],
+      "role": "secondary",
+      "css_var": "--pci-silver",
+      "elementor_global_id": "accent"
+    },
+    "light_grey": {
+      "name": "Light Grey",
+      "hex": "#D6D6D7",
+      "rgb": [
+        214,
+        214,
+        215
+      ],
+      "cmyk": [
+        0,
+        0,
+        0,
+        16
+      ],
+      "role": "secondary",
+      "css_var": "--pci-light-grey",
+      "elementor_global_id": "2ae5eaf"
+    },
+    "black": {
+      "name": "Black",
+      "hex": "#000000",
+      "rgb": [
+        0,
+        0,
+        0
+      ],
+      "cmyk": [
+        0,
+        0,
+        0,
+        100
+      ],
+      "role": "information",
+      "css_var": "--pci-black",
+      "elementor_global_id": "762ebb1"
+    },
+    "dark_grey": {
+      "name": "Dark Grey",
+      "hex": "#212121",
+      "rgb": [
+        33,
+        33,
+        33
+      ],
+      "cmyk": [
+        0,
+        0,
+        0,
+        87
+      ],
+      "role": "information",
+      "css_var": "--pci-dark-grey",
+      "elementor_global_id": "text"
+    },
+    "grey": {
+      "name": "Grey",
+      "hex": "#424242",
+      "rgb": [
+        66,
+        66,
+        66
+      ],
+      "cmyk": [
+        0,
+        0,
+        0,
+        74
+      ],
+      "role": "information",
+      "css_var": "--pci-grey",
+      "elementor_global_id": "e16ab5e"
+    },
+    "beige": {
+      "name": "Beige",
+      "hex": "#CEBE9F",
+      "rgb": [
+        206,
+        190,
+        159
+      ],
+      "cmyk": [
+        24,
+        24,
+        42,
+        1
+      ],
+      "role": "complementary",
+      "css_var": "--pci-beige",
+      "elementor_global_id": "18fa8e3"
+    },
+    "air_blue": {
+      "name": "Air Blue",
+      "hex": "#06B4FE",
+      "rgb": [
+        6,
+        180,
+        254
+      ],
+      "cmyk": [
+        68,
+        15,
+        0,
+        0
+      ],
+      "role": "accent",
+      "css_var": "--pci-air-blue",
+      "elementor_global_id": "dd6ee19"
+    },
+    "vibrant_green": {
+      "name": "Vibrant Green",
+      "hex": "#1BE466",
+      "rgb": [
+        27,
+        228,
+        102
+      ],
+      "cmyk": [
+        61,
+        0,
+        70,
+        0
+      ],
+      "role": "accent",
+      "css_var": "--pci-vibrant-green",
+      "elementor_global_id": "3080653"
+    },
+    "progressive_orange": {
+      "name": "Progressive Orange",
+      "hex": "#FD8B1B",
+      "rgb": [
+        253,
+        139,
+        27
+      ],
+      "cmyk": [
+        0,
+        55,
+        94,
+        1
+      ],
+      "role": "accent",
+      "css_var": "--pci-progressive-orange",
+      "elementor_global_id": "cee2b31"
+    }
+  },
+  "industries": {
+    "water": {
+      "name": "Water & Environment",
+      "accent": "#52D5FC",
+      "cmyk": [
+        56,
+        1,
+        6,
+        0
+      ],
+      "icon": "Water-Environment",
+      "pale": true,
+      "photos": "photos/water-environment",
+      "rgb": [
+        82,
+        213,
+        252
+      ],
+      "css_var": "--pci-ind-water",
+      "elementor_global_id": "f790294"
+    },
+    "energy": {
+      "name": "Energy",
+      "accent": "#FD5003",
+      "cmyk": [
+        0,
+        78,
+        100,
+        0
+      ],
+      "icon": "Oil-Gas",
+      "pale": false,
+      "rgb": [
+        253,
+        80,
+        3
+      ],
+      "css_var": "--pci-ind-energy",
+      "elementor_global_id": "dc5a0f3"
+    },
+    "mining": {
+      "name": "Industrial & Mining",
+      "accent": "#E99801",
+      "cmyk": [
+        2,
+        42,
+        97,
+        7
+      ],
+      "icon": "Industrial-Mining",
+      "pale": false,
+      "rgb": [
+        233,
+        152,
+        1
+      ],
+      "css_var": "--pci-ind-industrial",
+      "elementor_global_id": "7efabb8"
+    },
+    "defense": {
+      "name": "Aerospace & Defense",
+      "accent": "#B29F74",
+      "cmyk": [
+        34,
+        33,
+        59,
+        6
+      ],
+      "icon": "Aerospace-Defense",
+      "pale": false,
+      "rgb": [
+        178,
+        159,
+        116
+      ],
+      "css_var": "--pci-ind-aerospace",
+      "elementor_global_id": "fea46f8"
+    },
+    "food": {
+      "name": "Food & Agriculture",
+      "accent": "#A5E20E",
+      "cmyk": [
+        44,
+        0,
+        99,
+        0
+      ],
+      "icon": "Food-Agriculture",
+      "pale": true,
+      "rgb": [
+        165,
+        226,
+        14
+      ],
+      "css_var": "--pci-ind-food-ag",
+      "elementor_global_id": "c2cf639"
+    },
+    "health": {
+      "name": "Health & Wellness",
+      "accent": "#00CF62",
+      "cmyk": [
+        70,
+        0,
+        78,
+        0
+      ],
+      "icon": "Medical-Oxygen",
+      "pale": false,
+      "rgb": [
+        0,
+        207,
+        98
+      ],
+      "css_var": "--pci-ind-health",
+      "elementor_global_id": "811add3"
+    },
+    "chemical": {
+      "name": "Chemical & Pharmaceutical",
+      "accent": "#06B4FE",
+      "cmyk": [
+        68,
+        15,
+        0,
+        0
+      ],
+      "icon": "Chemical-Pharmaceutical",
+      "pale": true,
+      "rgb": [
+        6,
+        180,
+        254
+      ],
+      "css_var": "--pci-ind-chemical",
+      "elementor_global_id": "dd6ee19"
+    }
+  },
+  "css_accent_class_map": {
+    "pci-accent-water": "water",
+    "pci-accent-energy": "energy",
+    "pci-accent-mining": "mining",
+    "pci-accent-defense": "defense",
+    "pci-accent-food": "food",
+    "pci-accent-health": "health",
+    "pci-accent-chemical": "chemical"
+  },
+  "fonts": {
+    "_note": "TWO STACKS, and they are not interchangeable. Print/deck uses the licensed PCI faces; web uses Roboto, which is what pcigases.com runs on. Each print weight is addressed by its FULL FACE NAME with bold OFF \u2014 this matches PCI's own decks.",
+    "print": {
+      "_note": "Typeface names and flags match PCI's own PowerPoint decks (checked against 'PCI mining application 2025.pptx'): each weight is addressed by its full name with bold off. The sales team needs Neufile Grotesk and Mr Eaves XL Modern installed (they are desktop-licensed company fonts).",
+      "display": {
+        "face": "Neufile Grotesk Light",
+        "bold": false,
+        "file": "NeufileGrotesk-Light.ttf"
+      },
+      "body": {
+        "face": "Neufile Grotesk Regular",
+        "bold": false,
+        "file": "NeufileGrotesk-Regular.ttf"
+      },
+      "medium": {
+        "face": "Neufile Grotesk Medium",
+        "bold": false,
+        "file": "NeufileGrotesk-Medium.ttf"
+      },
+      "semibold": {
+        "face": "Neufile Grotesk SemiBold",
+        "bold": false,
+        "file": "NeufileGrotesk-SemiBold.ttf"
+      },
+      "bold": {
+        "face": "Neufile Grotesk Bold",
+        "bold": false,
+        "file": "NeufileGrotesk-Bold.ttf"
+      },
+      "eyebrow": {
+        "face": "MrEavesXLModOT-Book",
+        "bold": false,
+        "file": "MrEavesXLModOT-Book.ttf",
+        "caps": true,
+        "tracking": 300
+      },
+      "highlight": {
+        "face": "MrEavesXLModOT-Bold",
+        "bold": false,
+        "file": "MrEavesXLModOT-Bold.ttf"
+      }
+    },
+    "web": {
+      "_note": "Elementor kit 9 global typography, read live from the site.",
+      "family": "Roboto",
+      "google_fonts": "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap",
+      "display": {
+        "face": "Roboto",
+        "weight": 300,
+        "elementor_global": "primary"
+      },
+      "body": {
+        "face": "Roboto",
+        "weight": 400,
+        "elementor_global": "text"
+      },
+      "medium": {
+        "face": "Roboto",
+        "weight": 500,
+        "elementor_global": "secondary"
+      },
+      "label": {
+        "face": "Roboto",
+        "weight": 500,
+        "elementor_global": "accent"
+      },
+      "trap": "The WP theme self-hosts Roboto with each weight as a SEPARATE FAMILY (robotolight, robotothin, robotoregular) so font-weight does nothing there. Never replicate that."
+    }
+  },
+  "logos": {
+    "primary": "logo/PCI Gases Logo.svg",
+    "horizontal_slogan": "logo/PCI Logo + Slogan Horizontal.svg",
+    "vertical_slogan": "logo/PCI Gases + Slogan Vertical.svg",
+    "mark": "logo/PCI Gases Logo Mark.svg",
+    "min_height_in": 0.3,
+    "raster_cobalt": "logo/pci-gases-logo-cobalt-480w.png",
+    "raster_white": "logo/pci-gases-logo-white-480w.png",
+    "raster_black": "logo/pci-gases-logo-black-480w.png",
+    "data_uris": "logo/logo-data-uris.txt",
+    "_note": "SVG masters are the reference for print and slides. Raster PNGs exist for web and for single-file tools. White on Cobalt is the default lock-up on brand grounds.",
+    "_dir": "logo"
+  },
+  "geometry": {
+    "wedge_ratio": 0.5615,
+    "wedge_ratio_note": "run/rise of the PCI Line. The collateral generator states dx/dy ~0.57 from the logo triangle; the Elementor block library uses 0.5615. They agree within 3%. Use 0.5615 everywhere. Never a percentage clip-path, never Elementor's Shape Divider.",
+    "radius_default_px": 0,
+    "radius_ui_px": 3,
+    "radius_bluebox_px": 10,
+    "slide_emu": {
+      "width": 24382413,
+      "height": 13716000,
+      "inches": [
+        26.67,
+        15.0
+      ],
+      "ratio": "16:9",
+      "note": "PCI's deck template is exactly 2x standard widescreen. Match it or the masters, logo placement and type scale all come out wrong."
+    },
+    "sell_sheet_in": {
+      "trim": [
+        8.5,
+        11.0
+      ],
+      "bleed": 0.125,
+      "document": [
+        8.75,
+        11.25
+      ]
+    },
+    "logo_min_height_in": 0.3
+  },
+  "rules": {
+    "body_text_print": "black",
+    "body_text_screen": "dark_grey",
+    "accent_max_area_pct": 6,
+    "min_contrast_text": 4.5,
+    "min_contrast_large": 3.0,
+    "pale_accent_on_light_resolves_to": "cobalt",
+    "headline_case": "Upper-and-lower; never ALL CAPS (eyebrow labels excepted)",
+    "print_min_dpi": 250,
+    "print_target_dpi": 300,
+    "no_two_tone_wedge_banners": true,
+    "slide_footer": "PCI Gases Confidential & Proprietary",
+    "tagline": "Reshape your tomorrow",
+    "chart_series_cap_default": 4,
+    "chart_series_cap_extended": 5,
+    "chart_series_cap_all_pairs": 3,
+    "web_body_ink": "dark_grey",
+    "print_body_ink": "black",
+    "print_min_type_pt": 7,
+    "print_min_body_pt": 8,
+    "copy_fidelity": "Copy is verbatim from source. If it does not fit, CUT it \u2014 never shrink. On a deck, overflow goes to the speaker notes. Log every cut.",
+    "scope_class_web": "pci-app",
+    "scope_class_elementor": "pci-ip"
+  },
+  "contact": {
+    "address": "12201 Magnolia Avenue, Riverside, California 92503, US",
+    "address_lines": [
+      "12201 Magnolia Avenue",
+      "Riverside, California",
+      "92503, US"
+    ],
+    "phone": "+1 951.479.0860",
+    "email": "oxygen@pcigases.com",
+    "web": "www.pcigases.com",
+    "certs": "ISO9001 & ISO13485 registered company",
+    "mission": "Our mission is to enable you to have autonomy in your Oxygen and Nitrogen supply"
+  },
+  "icon_map": {
+    "_note": "Web icon (Font Awesome stand-in or PCI icomoon glyph) -> print icon file under assets/icons. PCI glyphs use the PCI pack; FA stand-ins use the Tabler line set, as the brand spec directs.",
+    "far fa-clock": "tabler/clock.svg",
+    "far fa-check-circle": "tabler/circle-check.svg",
+    "far fa-life-ring": "tabler/shield-check.svg",
+    "far fa-lightbulb": "tabler/bulb.svg",
+    "far fa-money-bill-alt": "tabler/cash.svg",
+    "icon-Water-Environment-Cycle": "Water-Environment-Cycle.svg",
+    "icon-Water-Environment-Icon": "Water-Environment-Icon.svg",
+    "icon-Industrial-Mining-Icon": "Industrial-Mining-Icon.svg",
+    "icon-Medical-Oxygen-Icon": "Medical-Oxygen-Icon.svg",
+    "icon-Chemical-Pharmaceutical-Icon": "Chemical-Pharmaceutical-Icon.svg",
+    "icon-Food-Agriculture-Icon": "Food-Agriculture-Icon.svg",
+    "icon-Aerospace-Defense-Icon": "Aerospace-Defense-Icon.svg",
+    "icon-Oil-Gas-Icon": "Oil-Gas-Icon.svg",
+    "_default": "tabler/circle-check.svg"
+  },
+  "icons": {
+    "_note": "SVG set \u2014 richer than the site's icomoon web font, which carries only five glyphs. Per industry: -Icon (the glyph), -Cycle (circular badge), -Corner (corner device). Tabler line icons are the approved stand-in where no PCI glyph exists.",
+    "industry_dir": "icons",
+    "tabler_dir": "icons/tabler",
+    "industry_keys": [
+      "Aerospace-Defense",
+      "Chemical-Pharmaceutical",
+      "Food-Agriculture",
+      "Industrial-Mining",
+      "Medical-Oxygen",
+      "Oil-Gas",
+      "Water-Environment"
+    ],
+    "variants": [
+      "Icon",
+      "Cycle",
+      "Corner"
+    ]
+  },
+  "charts": {
+    "_note": "Derived from PCI hues and machine-validated. See docs/07-charts-and-dataviz.md. PCI has 2 cool hues and 5 warm hues that collide with one another, so the caps are real.",
+    "surface": {
+      "light": "#FFFFFF",
+      "dark": "#212121"
+    },
+    "theme_default": {
+      "cap": 4,
+      "light": [
+        "#1e48e8",
+        "#e27907",
+        "#089ee0",
+        "#fd5106"
+      ],
+      "dark": [
+        "#2a5afa",
+        "#dd7607",
+        "#08a0e3",
+        "#fd5106"
+      ],
+      "anchors": [
+        "Tech Blue",
+        "Progressive Orange",
+        "Air Blue",
+        "Energy"
+      ]
+    },
+    "theme_extended": {
+      "cap": 5,
+      "light": [
+        "#cc8507",
+        "#1e48e8",
+        "#e27907",
+        "#089ee0",
+        "#fd5106"
+      ],
+      "dark": [
+        "#ca8407",
+        "#2a5afa",
+        "#dd7607",
+        "#08a0e3",
+        "#fd5106"
+      ],
+      "anchors": [
+        "Industrial & Mining",
+        "Tech Blue",
+        "Progressive Orange",
+        "Air Blue",
+        "Energy"
+      ]
+    },
+    "green_swap_in": {
+      "light": "#08ab51",
+      "dark": "#09af53",
+      "note": "Health & Wellness re-stepped. May replace any slot but may only neighbour blue or cyan."
+    },
+    "all_pairs_forms": [
+      "scatter",
+      "bubble",
+      "map",
+      "smallmultiples"
+    ],
+    "sequential_blue": {
+      "100": "#dde8ff",
+      "150": "#cadbff",
+      "200": "#b7ceff",
+      "250": "#9fbdfe",
+      "300": "#87acfe",
+      "350": "#709afe",
+      "400": "#5887fe",
+      "450": "#4172fe",
+      "500": "#2c5cfc",
+      "550": "#204aea",
+      "600": "#1537d9",
+      "650": "#0d21c7",
+      "700": "#0b07ba"
+    },
+    "ordinal_light": [
+      "#87acfe",
+      "#5887fe",
+      "#2c5cfc",
+      "#1537d9"
+    ],
+    "ordinal_dark": [
+      "#204aea",
+      "#4172fe",
+      "#709afe",
+      "#9fbdfe"
+    ],
+    "diverging": {
+      "cool": [
+        "#1537d9",
+        "#2c5cfc",
+        "#5887fe"
+      ],
+      "mid_light": "#EBEAE9",
+      "mid_dark": "#424242",
+      "warm": [
+        "#f44d06",
+        "#c33c03",
+        "#952c02"
+      ]
+    },
+    "status": {
+      "light": {
+        "good": "#05893f",
+        "warning": "#ba7905",
+        "serious": "#ae5c04",
+        "critical": "#b53703"
+      },
+      "dark": {
+        "good": "#0cc25b",
+        "warning": "#d89306",
+        "serious": "#e07907",
+        "critical": "#f75a2a"
+      }
+    }
+  }
+}

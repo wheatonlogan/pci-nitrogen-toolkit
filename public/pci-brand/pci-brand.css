@@ -1,0 +1,413 @@
+/* ============================================================================
+   PCI Gases Brand Stylesheet  v1.0  (2026-09-21)
+   Single source of truth for standalone web applications.
+   Every value here is either (a) verbatim from PCI Brand Color Guidelines,
+   or (b) derived and validated — see docs/07-charts-and-dataviz.md.
+   Do not hand-pick new colors. Add tokens, don't inline hexes.
+   ========================================================================== */
+
+/* ---------- 1. FONT LOADING -------------------------------------------------
+   ROBOTO IS THE PCI WEB TYPEFACE. Not a fallback choice — it is what
+   pcigases.com runs on. Elementor kit 9 global typography, read live:
+
+     Primary   = Roboto 300   (display / H1 / H2)
+     Secondary = Roboto 500   (emphasis, buttons, table headers)
+     Text      = Roboto 400   (body)
+     Accent    = Roboto 500   (eyebrows, labels)
+
+   Neufile Grotesk / Helvetica Neue / MrEavesXLModOT are the PRINT + DECK faces
+   (PowerPoint template, InDesign collateral). Do NOT put them in a web stack —
+   a tool that renders Neufile on Logan's machine and Roboto on everyone else's
+   is not brand-consistent, it is brand-variable.
+
+   Add to <head> BEFORE this stylesheet:
+
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+   KNOWN LIVE-SITE TRAP (do not replicate): the WordPress theme self-hosts Roboto
+   with each weight as a SEPARATE FAMILY — `robotolight`, `robotothin`,
+   `robotoregular` — so font-weight does nothing there. In a standalone web app
+   always load the real Roboto family and set weight with font-weight.
+---------------------------------------------------------------------------- */
+
+:root {
+  /* ---------- 2. RAW BRAND COLORS — verbatim, never edit ---------- */
+  --pci-cobalt-blue:        #192F92;   /* primary */
+  --pci-white:              #FFFFFF;   /* co-primary */
+  --pci-tech-blue:          #1E48E8;   /* secondary */
+  --pci-silver:             #EBEAE9;   /* secondary */
+  --pci-light-grey:         #D6D6D7;   /* secondary */
+  --pci-black:              #000000;   /* information */
+  --pci-dark-grey:          #212121;   /* information */
+  --pci-grey:               #424242;   /* information */
+  --pci-beige:              #CEBE9F;   /* complementary */
+  --pci-air-blue:           #06B4FE;   /* accent — DEFAULT for nitrogen */
+  --pci-vibrant-green:      #1BE466;   /* accent — default for oxygen */
+  --pci-progressive-orange: #FD8B1B;   /* accent */
+
+  /* industry accents — industry-specific collateral and iconography ONLY */
+  --pci-ind-energy:         #FD5003;
+  --pci-ind-industrial:     #E99801;
+  --pci-ind-aerospace:      #B29F74;
+  --pci-ind-food-ag:        #A5E20E;
+  --pci-ind-health:         #00CF62;
+  --pci-ind-water:          #52D5FC;
+  --pci-ind-chemical:       #06B4FE;   /* same hex as Air Blue, by intent */
+
+  /* ---------- 3. SEMANTIC TOKENS — light mode (the default) ---------- */
+  color-scheme: light;
+
+  --surface-page:    #F4F5F9;   /* app background (tinted toward cobalt) */
+  --surface-1:       #FFFFFF;   /* cards, chart surface */
+  --surface-2:       var(--pci-silver);
+  --surface-3:       var(--pci-light-grey);
+  --surface-inverse: var(--pci-cobalt-blue);
+
+  /* SCREEN BODY INK IS DARK GREY, NOT BLACK — decided earlier on this project.
+     The brand doc specifies #000000, correct for print; pure black on white is
+     harsh at paragraph length on screen. #212121 is an approved brand colour and
+     is what Elementor's `text` global is set to. Keep #000000 for print and
+     one-ink work only. */
+  --ink-primary:     var(--pci-dark-grey);  /* 15.9:1 on #FFFFFF */
+  --ink-secondary:   var(--pci-grey);       /* 10.1:1 */
+  --ink-muted:       #6B6B6B;               /*  5.3:1 */
+  --ink-brand:       var(--pci-cobalt-blue);/* 11.3:1 */
+  --ink-on-brand:    var(--pci-white);      /* 11.3:1 on cobalt */
+  --ink-on-accent:   var(--pci-black);
+
+  --border-subtle:   var(--pci-light-grey);
+  --border-strong:   var(--pci-cobalt-blue);
+  --border-focus:    var(--pci-tech-blue);
+
+  --accent:          var(--pci-air-blue);   /* nitrogen default accent */
+  --accent-ink:      #0079AC;               /* Air Blue darkened to 4.5:1 for text */
+
+  /* ---------- 3b. ELEMENTOR GLOBAL ALIASES ----------------------------------
+     The same names Elementor kit 9 exposes in Site CSS, so CSS written for a
+     standalone tool lifts into the site (and back) with no renaming. Values
+     match the live kit; ids are this kit's and cannot be invented. */
+  --e-global-color-primary:   var(--pci-cobalt-blue);
+  --e-global-color-secondary: var(--pci-tech-blue);
+  --e-global-color-text:      var(--pci-dark-grey);
+  --e-global-color-accent:    var(--pci-silver);
+  --e-global-color-6a9e539:   var(--pci-white);
+  --e-global-color-2ae5eaf:   var(--pci-light-grey);
+  --e-global-color-762ebb1:   var(--pci-black);
+  --e-global-color-e16ab5e:   var(--pci-grey);
+  --e-global-color-18fa8e3:   var(--pci-beige);
+  --e-global-color-cee2b31:   var(--pci-progressive-orange);
+  --e-global-color-dc5a0f3:   var(--pci-ind-energy);
+  --e-global-color-7efabb8:   var(--pci-ind-industrial);
+  --e-global-color-fea46f8:   var(--pci-ind-aerospace);
+  --e-global-color-c2cf639:   var(--pci-ind-food-ag);
+  --e-global-color-811add3:   var(--pci-ind-health);
+  --e-global-color-f790294:   var(--pci-ind-water);
+  --e-global-color-dd6ee19:   var(--pci-ind-chemical);
+  --e-global-color-3080653:   var(--pci-vibrant-green);
+
+  /* ---------- 4. CHART TOKENS — light (derived + validated) ---------- */
+  --chart-surface:   var(--surface-1);
+  --chart-grid:      #E3E3E6;
+  --chart-axis:      #9A9AA0;
+  /* DEFAULT THEME — up to 4 series. Assign in order, never cycle. */
+  --series-1:        #1e48e8;   /* blue   — Tech Blue, unchanged */
+  --series-2:        #e27907;   /* orange — Progressive Orange, re-stepped */
+  --series-3:        #089ee0;   /* cyan   — Air Blue, re-stepped */
+  --series-4:        #fd5106;   /* red    — Energy, unchanged */
+  /* EXTENDED THEME — exactly 5 series. A DIFFERENT ORDER, not an append:
+     you cannot bolt a 5th slot onto the default theme (red would sit beside
+     amber and fail CVD separation). Pick one theme per surface and freeze it. */
+  --series-x1:       #cc8507;   /* amber  — Industrial & Mining, re-stepped */
+  --series-x2:       #1e48e8;   /* blue   */
+  --series-x3:       #e27907;   /* orange */
+  --series-x4:       #089ee0;   /* cyan   */
+  --series-x5:       #fd5106;   /* red    */
+  /* SWAP-IN — green may replace any slot, but may only neighbour blue or cyan */
+  --series-green:    #08ab51;   /* green  — Health & Wellness, re-stepped */
+
+  --status-good:     #05893f;
+  --status-warning:  #ba7905;
+  --status-serious:  #ae5c04;
+  --status-critical: #b53703;
+
+  /* sequential blue ramp (magnitude) */
+  --seq-100: #dde8ff; --seq-200: #b7ceff; --seq-300: #87acfe; --seq-400: #5887fe;
+  --seq-500: #2c5cfc; --seq-600: #1537d9; --seq-700: #0b07ba;
+
+  /* diverging: cool (blue) <-> neutral <-> warm (Energy red) */
+  --div-cool-3: #1537d9; --div-cool-2: #2c5cfc; --div-cool-1: #5887fe;
+  --div-mid:    var(--pci-silver);
+  --div-warm-1: #f44d06; --div-warm-2: #c33c03; --div-warm-3: #952c02;
+
+  /* ---------- 5. TYPE ---------- */
+  /* one family, three weights — mirrors Elementor kit 9 global typography */
+  --font-display: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-body:    "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono:    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  --fw-light: 300;    /* = Elementor global typography "Primary"  */
+  --fw-regular: 400;  /* = "Text"                                  */
+  --fw-medium: 500;   /* = "Secondary" and "Accent"                */
+
+  --fs-display: clamp(2rem, 1.2rem + 3.2vw, 3.25rem);
+  --fs-h1:      clamp(1.5rem, 1.1rem + 1.7vw, 2.25rem);
+  --fs-h2:      clamp(1.25rem, 1.05rem + 0.9vw, 1.625rem);
+  --fs-h3:      1.125rem;
+  --fs-body:    1rem;
+  --fs-small:   0.8125rem;
+  --fs-label:   0.6875rem;   /* uppercase eyebrow / field labels */
+
+  --lh-tight: 1.15; --lh-snug: 1.3; --lh-normal: 1.55;
+  --ls-label: 0.08em;   /* uppercase tracking — a PCI signature */
+  --ls-display: 0.01em;
+
+  /* ---------- 6. SPACE / SHAPE / MOTION ---------- */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
+
+  /* PCI geometry is SQUARE by default. The one exception in the existing print
+     and Elementor block libraries is the cobalt "blue box" callout, at 10px. */
+  --radius-sm: 0px; --radius-ui: 3px; --radius-bluebox: 10px; --radius-pill: 999px;
+
+  /* shadows are cobalt-tinted, never neutral black */
+  --shadow-1: 0 1px 3px rgba(25,47,146,.10);
+  --shadow-2: 0 2px 16px rgba(25,47,146,.10);
+  --shadow-3: 0 8px 32px rgba(25,47,146,.14);
+
+  /* THE PCI LINE — fixed run-to-rise ratio, the same constant the Elementor
+     block library uses on A1 hero-split-wedge. Draw it from this ratio, NEVER as
+     a percentage clip-path and never as Elementor's Shape Divider: both give the
+     right angle at exactly one viewport width. (An independent measurement of
+     the deck's own banner graphic gives 0.577 — within 3%; the library constant
+     wins so web and site agree.) */
+  --pci-wedge-ratio: 0.5615;
+  --pci-wedge-h: 3.5rem;   /* the height the wedge is cut against */
+  --ease: cubic-bezier(.4,0,.2,1);
+  --dur: 150ms;
+
+  --maxw-app: 1120px;
+  --maxw-prose: 68ch;
+}
+
+/* ---------- 7. DARK MODE ----------------------------------------------------
+   Selected, not flipped: chart steps are re-derived for the dark surface.
+   Declared under BOTH scopes so an explicit toggle beats the OS setting.
+--------------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) { color-scheme: dark;
+    --surface-page: #16161A; --surface-1: #212121; --surface-2: #2C2C2E; --surface-3: #3A3A3D;
+    --surface-inverse: var(--pci-cobalt-blue);
+    --ink-primary: #FFFFFF; --ink-secondary: #C9C9CE; --ink-muted: #9A9AA0;
+    --ink-brand: #7E9BFF; --ink-on-brand: #FFFFFF;
+    --border-subtle: #3A3A3D; --border-strong: #7E9BFF; --border-focus: #5887fe;
+    --accent: var(--pci-air-blue); --accent-ink: var(--pci-air-blue);
+    --chart-surface: var(--surface-1); --chart-grid: #35353A; --chart-axis: #75757C;
+    --series-1: #2a5afa; --series-2: #dd7607; --series-3: #08a0e3; --series-4: #fd5106;
+    --series-x1: #ca8407; --series-x2: #2a5afa; --series-x3: #dd7607; --series-x4: #08a0e3; --series-x5: #fd5106;
+    --series-green: #09af53;
+    --status-good: #0cc25b; --status-warning: #d89306; --status-serious: #e07907; --status-critical: #f75a2a;
+    --div-mid: var(--pci-grey);
+    --shadow-1: 0 1px 3px rgba(0,0,0,.45); --shadow-2: 0 2px 16px rgba(0,0,0,.45); --shadow-3: 0 8px 32px rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"] { color-scheme: dark;
+  --surface-page: #16161A; --surface-1: #212121; --surface-2: #2C2C2E; --surface-3: #3A3A3D;
+  --surface-inverse: var(--pci-cobalt-blue);
+  --ink-primary: #FFFFFF; --ink-secondary: #C9C9CE; --ink-muted: #9A9AA0;
+  --ink-brand: #7E9BFF; --ink-on-brand: #FFFFFF;
+  --border-subtle: #3A3A3D; --border-strong: #7E9BFF; --border-focus: #5887fe;
+  --accent: var(--pci-air-blue); --accent-ink: var(--pci-air-blue);
+  --chart-surface: var(--surface-1); --chart-grid: #35353A; --chart-axis: #75757C;
+  --series-1: #2a5afa; --series-2: #dd7607; --series-3: #08a0e3; --series-4: #fd5106;
+  --series-x1: #ca8407; --series-x2: #2a5afa; --series-x3: #dd7607; --series-x4: #08a0e3; --series-x5: #fd5106;
+  --series-green: #09af53;
+  --status-good: #0cc25b; --status-warning: #d89306; --status-serious: #e07907; --status-critical: #f75a2a;
+  --div-mid: var(--pci-grey);
+  --shadow-1: 0 1px 3px rgba(0,0,0,.45); --shadow-2: 0 2px 16px rgba(0,0,0,.45); --shadow-3: 0 8px 32px rgba(0,0,0,.55);
+}
+
+/* ---------- 8. RESET + BASE ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-body); font-size: var(--fs-body); font-weight: var(--fw-regular);
+  line-height: var(--lh-normal); color: var(--ink-primary);
+  background: var(--surface-page);
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+img, svg, video, canvas { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:where(a) { color: var(--ink-brand); text-underline-offset: 2px; }
+:where(:focus-visible) { outline: 2px solid var(--border-focus); outline-offset: 2px; border-radius: var(--radius-sm); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+
+/* ---------- 9. TYPE SCALE ---------- */
+.pci-display { font-family: var(--font-display); font-weight: var(--fw-light); font-size: var(--fs-display);
+  line-height: var(--lh-tight); letter-spacing: var(--ls-display); color: var(--ink-brand); }
+.pci-h1 { font-family: var(--font-display); font-weight: var(--fw-light); font-size: var(--fs-h1);
+  line-height: var(--lh-tight); color: var(--ink-brand); }
+.pci-h2 { font-family: var(--font-display); font-weight: var(--fw-regular); font-size: var(--fs-h2);
+  line-height: var(--lh-snug); color: var(--ink-brand); }
+.pci-h3 { font-family: var(--font-display); font-weight: var(--fw-medium); font-size: var(--fs-h3);
+  line-height: var(--lh-snug); color: var(--ink-primary); }
+.pci-label { font-size: var(--fs-label); font-weight: var(--fw-medium); text-transform: uppercase;
+  letter-spacing: var(--ls-label); color: var(--ink-brand); }
+.pci-small { font-size: var(--fs-small); color: var(--ink-secondary); }
+.pci-muted { color: var(--ink-muted); }
+.pci-num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+
+/* ---------- 10. LAYOUT ---------- */
+.pci-app { max-width: var(--maxw-app); margin-inline: auto; padding: var(--sp-5) var(--sp-4); }
+.pci-stack > * + * { margin-top: var(--sp-4); }
+.pci-grid { display: grid; gap: var(--sp-3); }
+.pci-grid--2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+.pci-grid--3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+.pci-grid--4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+@media (max-width: 860px) { .pci-grid--3, .pci-grid--4 { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 520px) { .pci-grid--2, .pci-grid--3, .pci-grid--4 { grid-template-columns: 1fr; } }
+
+/* ---------- 11. HEADER + LOGO ---------- */
+.pci-header { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4);
+  flex-wrap: wrap; border-bottom: 2.5px solid var(--pci-cobalt-blue);
+  padding-bottom: var(--sp-4); margin-bottom: var(--sp-5); }
+.pci-logo { height: 34px; width: auto; }
+/* Logo colour follows the theme. Mark up BOTH images; CSS shows the right one.
+   Cobalt on a dark surface is 1.4:1 — effectively invisible. */
+.pci-logo--dark { display: none; }
+.pci-header__meta { text-align: right; }
+.pci-header__meta h1 { font-family: var(--font-display); font-size: var(--fs-h3); font-weight: var(--fw-medium); color: var(--ink-brand); }
+
+/* the PCI angled banner device — 60° cut, cobalt fill */
+.pci-banner { background: var(--pci-cobalt-blue); color: var(--ink-on-brand);
+  padding: var(--sp-4) var(--sp-8) var(--sp-4) var(--sp-5);
+  --_run: calc(var(--pci-wedge-ratio) * var(--pci-wedge-h));
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--_run)) 100%, 0 100%); }
+
+/* ---------- 12. CARD / PANEL ---------- */
+.pci-card { background: var(--surface-1); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-ui); box-shadow: var(--shadow-2); padding: var(--sp-5); }
+.pci-card--flush { padding: 0; overflow: hidden; }
+.pci-panel { background: var(--surface-2); border-radius: var(--radius-sm); padding: var(--sp-4); }
+
+/* ---------- 13. STAT TILE ---------- */
+.pci-stat { background: var(--surface-2); border-radius: var(--radius-sm); padding: var(--sp-3) var(--sp-4); }
+.pci-stat__label { font-size: var(--fs-label); font-weight: var(--fw-medium); text-transform: uppercase;
+  letter-spacing: var(--ls-label); color: var(--ink-brand); margin-bottom: var(--sp-1); }
+.pci-stat__value { font-family: var(--font-display); font-size: 1.5rem; font-weight: var(--fw-regular);
+  line-height: 1.1; color: var(--ink-primary); font-variant-numeric: tabular-nums; }
+.pci-stat__sub { font-size: var(--fs-small); color: var(--ink-muted); margin-top: var(--sp-1); }
+.pci-stat--hero { background: var(--pci-cobalt-blue); border-radius: var(--radius-bluebox); }
+.pci-stat--hero .pci-stat__label { color: rgba(255,255,255,.78); }
+.pci-stat--hero .pci-stat__value { color: #FFFFFF; font-size: 2rem; font-weight: var(--fw-medium); }
+.pci-stat--hero .pci-stat__sub { color: rgba(255,255,255,.72); }
+
+/* ---------- 14. FORM CONTROLS ---------- */
+.pci-field { display: block; }
+.pci-field__label { display: block; font-size: var(--fs-label); font-weight: var(--fw-medium);
+  text-transform: uppercase; letter-spacing: var(--ls-label); color: var(--ink-brand); margin-bottom: var(--sp-1); }
+.pci-input, .pci-select, .pci-textarea {
+  width: 100%; background: var(--surface-2); color: var(--ink-primary);
+  border: 1px solid var(--pci-cobalt-blue); border-radius: var(--radius-sm);
+  padding: var(--sp-2) var(--sp-3); font-variant-numeric: tabular-nums;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease); }
+.pci-input:focus, .pci-select:focus, .pci-textarea:focus {
+  outline: none; border-color: var(--pci-tech-blue); box-shadow: 0 0 0 3px rgba(30,72,232,.16); }
+.pci-input:disabled { opacity: .55; cursor: not-allowed; }
+.pci-hint { font-size: var(--fs-small); color: var(--ink-muted); margin-top: var(--sp-1); }
+
+/* ---------- 15. BUTTONS ---------- */
+.pci-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  min-height: 40px; padding: 0 var(--sp-5); border: 1px solid transparent; border-radius: var(--radius-sm);
+  font-weight: var(--fw-medium); font-size: var(--fs-small); letter-spacing: .03em;
+  text-transform: uppercase; cursor: pointer; text-decoration: none;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease); }
+.pci-btn--primary { background: var(--pci-cobalt-blue); color: #FFFFFF; }
+.pci-btn--primary:hover { background: #142578; }
+.pci-btn--secondary { background: transparent; color: var(--ink-brand); border-color: var(--pci-cobalt-blue); }
+.pci-btn--secondary:hover { background: rgba(25,47,146,.07); }
+.pci-btn--ghost { background: transparent; color: var(--ink-secondary); }
+.pci-btn--ghost:hover { background: var(--surface-2); }
+.pci-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ---------- 16. TABLE ---------- */
+.pci-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.pci-table caption { text-align: left; font-size: var(--fs-small); color: var(--ink-muted); padding-bottom: var(--sp-2); }
+.pci-table th { text-align: left; font-size: var(--fs-label); font-weight: var(--fw-medium);
+  text-transform: uppercase; letter-spacing: var(--ls-label); color: var(--ink-brand);
+  border-bottom: 2px solid var(--pci-cobalt-blue); padding: var(--sp-2) var(--sp-3); white-space: nowrap; }
+.pci-table td { border-bottom: 1px solid var(--border-subtle); padding: var(--sp-2) var(--sp-3); }
+.pci-table td.num, .pci-table th.num { text-align: right; }
+.pci-table tbody tr:hover { background: var(--surface-2); }
+
+/* ---------- 17. STATUS (always ships with an icon + text label) ---------- */
+.pci-status { display: inline-flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--fs-small); font-weight: var(--fw-medium); }
+.pci-status::before { content: ""; width: 10px; height: 10px; border-radius: var(--radius-pill); flex: none; }
+.pci-status--good::before     { background: var(--status-good); }
+.pci-status--warning::before  { background: var(--status-warning); }
+.pci-status--serious::before  { background: var(--status-serious); }
+.pci-status--critical::before { background: var(--status-critical); }
+
+/* ---------- 18. CHART SHELL + LEGEND ---------- */
+.pci-chart { position: relative; width: 100%; height: clamp(260px, 42vw, 420px); background: var(--chart-surface); }
+.pci-legend { display: flex; flex-wrap: wrap; gap: var(--sp-4); margin-bottom: var(--sp-3); }
+.pci-legend__item { display: inline-flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--fs-small); color: var(--ink-secondary); }
+.pci-legend__swatch { width: 22px; height: 3px; border-radius: 2px; flex: none; }
+.pci-legend__swatch--dashed { width: 22px; height: 0; border-top: 2px dashed var(--chart-axis); }
+
+/* dark-mode logo swap, both scopes (OS setting and explicit toggle) */
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) .pci-logo--light { display: none; }
+  :root:where(:not([data-theme="light"])) .pci-logo--dark  { display: block; }
+}
+:root[data-theme="dark"] .pci-logo--light { display: none; }
+:root[data-theme="dark"] .pci-logo--dark  { display: block; }
+@media print { .pci-logo--dark { display: none !important; } .pci-logo--light { display: block !important; } }
+
+/* ---------- 19. THEME TOGGLE + PRINT ---------- */
+.pci-theme-toggle { background: none; border: 1px solid var(--border-subtle); border-radius: var(--radius-pill);
+  width: 36px; height: 36px; cursor: pointer; color: var(--ink-secondary); }
+@media print {
+  body { background: #fff; }
+  .pci-card { box-shadow: none; border-color: #bbb; }
+  .pci-btn, .pci-theme-toggle { display: none !important; }
+  .pci-chart { break-inside: avoid; }
+}
+
+/* ---------- 20. UTILITIES ---------- */
+.pci-visually-hidden { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+  clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+.pci-rule { height: 2.5px; background: var(--pci-cobalt-blue); border: 0; }
+.pci-footnote { font-size: var(--fs-label); color: var(--ink-muted); line-height: 1.5; }
+
+/* ---------- 21. INDUSTRY ACCENTS — the contrast rule ------------------------
+   Water (#52D5FC), Food & Agriculture (#A5E20E), Chemical / Air Blue (#06B4FE)
+   and Vibrant Green (#1BE466) all sit near 1.9–2.3:1 on white. They FAIL text
+   contrast on white and on Silver. This was found and fixed once already in the
+   Elementor block library; the same rule applies to every web tool.
+
+   Rule: set the industry on a scope with data-industry, and eyebrows, numerals
+   and small text inside it render COBALT on light grounds and the industry
+   accent only on cobalt / accent bands. Never hand-colour these per element.
+-------------------------------------------------------------------------- */
+[data-industry] { --industry-accent: var(--pci-air-blue); }
+[data-industry="energy"]     { --industry-accent: var(--pci-ind-energy); }
+[data-industry="industrial"] { --industry-accent: var(--pci-ind-industrial); }
+[data-industry="aerospace"]  { --industry-accent: var(--pci-ind-aerospace); }
+[data-industry="food-ag"]    { --industry-accent: var(--pci-ind-food-ag); }
+[data-industry="health"]     { --industry-accent: var(--pci-ind-health); }
+[data-industry="water"]      { --industry-accent: var(--pci-ind-water); }
+[data-industry="chemical"]   { --industry-accent: var(--pci-ind-chemical); }
+
+/* on light ground: text-bearing accents fall back to Cobalt (automatic) */
+.pci-eyebrow, .pci-num, .pci-step-num { color: var(--ink-brand); }
+/* on a cobalt or accent band the industry colour is legible and is used */
+.pci-on-cobalt .pci-eyebrow, .pci-on-cobalt .pci-num, .pci-on-cobalt .pci-step-num
+  { color: var(--industry-accent); }
+.pci-on-cobalt { background: var(--pci-cobalt-blue); color: var(--ink-on-brand); }
+/* non-text uses — rules, icon fills, chart marks — may take the accent anywhere */
+.pci-accent-rule { height: 3px; background: var(--industry-accent); border: 0; }

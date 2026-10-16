@@ -1,0 +1,11 @@
+{
+  "kit_version": "2.0.0",
+  "kit_updated": "2026-09-21",
+  "css_sha256": "8434ae8e3808d0dd40edc6ebd20028a197d0009fafb9e4da46e8544f5ebd1fbf",
+  "stack": "plain",
+  "tailwind": null,
+  "industry": null,
+  "data_industry": null,
+  "scaffolded": "2026-10-16",
+  "note": "Kit-owned folder. Do not edit these files; re-run scaffold.mjs --update to refresh. Put app CSS elsewhere, scoped to .pci-app."
+}

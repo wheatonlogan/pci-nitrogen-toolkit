@@ -1,0 +1,44 @@
+{
+  "format": "pci.ngu.projects",
+  "version": 1,
+  "app": "1.6",
+  "exported": "2026-09-25T02:13:14.259433Z",
+  "projects": [
+    {
+      "id": "seed-katrium",
+      "name": "Katrium Chemical",
+      "at": 1788264002000,
+      "v": "1.6",
+      "s": {
+        "inFlow": "235",
+        "inPurity": "99",
+        "inPsi": "175",
+        "inAir": "pci",
+        "inGp": "30",
+        "iLin": "",
+        "iKwh": "",
+        "iHrs": "168",
+        "iCap": "",
+        "capTouched": false
+      }
+    },
+    {
+      "id": "seed-agi",
+      "name": "AGI Grain",
+      "at": 1788264001000,
+      "v": "1.6",
+      "s": {
+        "inFlow": "200",
+        "inPurity": "99",
+        "inPsi": "175",
+        "inAir": "pci",
+        "inGp": "30",
+        "iLin": "",
+        "iKwh": "",
+        "iHrs": "168",
+        "iCap": "",
+        "capTouched": false
+      }
+    }
+  ]
+}

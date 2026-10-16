@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · NGU Type-X Sales Toolkit</title>
+<link rel="icon" href="/pci-brand/logo/PCI%20Gases%20Logo%20Mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/pci-brand/pci-brand.css">
+<style>
+  .pci-app.ngu-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: var(--sp-5); }
+  .pci-app .ngu-login__card { width: min(400px, 100%); display: flex; flex-direction: column; gap: var(--sp-4); }
+  .pci-app .ngu-login__card .pci-logo { width: 160px; height: auto; }
+  .pci-app .ngu-error { color: var(--status-critical); }
+  .pci-app [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main class="pci-app ngu-login">
+  <form class="pci-card ngu-login__card" method="post" action="/login">
+    <img class="pci-logo pci-logo--light" src="/pci-brand/logo/pci-gases-logo-cobalt-480w.png" alt="PCI Gases" width="240" height="102">
+    <img class="pci-logo pci-logo--dark" src="/pci-brand/logo/pci-gases-logo-white-480w.png" alt="" aria-hidden="true" width="240" height="102">
+    <div>
+      <p class="pci-eyebrow">Internal</p>
+      <h1 class="pci-h2">NGU Type-X Sales Toolkit</h1>
+    </div>
+    <label class="pci-field">
+      <span class="pci-field__label">Your name</span>
+      <input class="pci-input" type="text" name="name" autocomplete="name" maxlength="60" required autofocus>
+    </label>
+    <label class="pci-field">
+      <span class="pci-field__label">Work email</span>
+      <input class="pci-input" type="email" name="email" autocomplete="email" maxlength="120" required>
+    </label>
+    <label class="pci-field">
+      <span class="pci-field__label">Team password</span>
+      <input class="pci-input" type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <p class="pci-hint ngu-error" id="errPassword" hidden>That password didn't work. Ask Marketing for the current one.</p>
+    <p class="pci-hint ngu-error" id="errIdentity" hidden>Enter your name and a valid email so your saves are labelled.</p>
+    <button class="pci-btn pci-btn--primary" type="submit">Sign in</button>
+  </form>
+</main>
+<script>
+  const e = new URLSearchParams(location.search).get("error");
+  if (e === "password") document.getElementById("errPassword").hidden = false;
+  if (e === "identity") document.getElementById("errIdentity").hidden = false;
+  try {
+    const f = document.forms[0], saved = JSON.parse(localStorage.getItem("ngu.who") || "null");
+    if (saved) { f.name.value = saved.name || ""; f.email.value = saved.email || ""; if (saved.name) f.password.focus(); }
+    f.addEventListener("submit", () => {
+      try { localStorage.setItem("ngu.who", JSON.stringify({ name: f.name.value, email: f.email.value })); } catch (_) {}
+    });
+  } catch (_) {}
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+/* pci-site-aliases.css: pcigases.com (Elementor V4) token names → brand-kit tokens.
+   Optional. Import AFTER pci-brand.css when you lift CSS or values from a pcigases.com spec
+   (pci-web-build references/tokens.md) into an app, so names like var(--pci-cobalt) resolve.
+   Variables only, no classes: the site's pci-* CLASSES are a different system and must not be
+   recreated in an app (see references/embedding.md). */
+:root {
+  --pci-cobalt:        var(--pci-cobalt-blue);
+  --pci-cobalt-deep:   #091442;               /* site token: final CTA band, deepest backgrounds */
+  --pci-ink:           var(--pci-dark-grey);
+  --pci-orange:        var(--pci-progressive-orange);
+  --pci-rule-on-dark:  rgba(255, 255, 255, 0.18);
+  --pci-font:          var(--font-body);
+
+  --ind-water:    var(--pci-ind-water);
+  --ind-health:   var(--pci-ind-health);
+  --ind-mining:   var(--pci-ind-industrial);
+  --ind-energy:   var(--pci-ind-energy);
+  --ind-food:     var(--pci-ind-food-ag);
+  --ind-chemical: var(--pci-ind-chemical);
+  --ind-defense:  var(--pci-ind-aerospace);
+}
