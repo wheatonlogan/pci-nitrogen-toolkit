@@ -452,6 +452,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   padding: var(--sp-3) var(--sp-4); margin-bottom: var(--sp-3);
   display:flex; gap: var(--sp-4); align-items:center; flex-wrap:wrap; }
 .proj-card.is-active { border-left-color: var(--pci-air-blue); background: var(--surface-2); }
+.proj-card.is-bad { border-left-color: var(--pci-progressive-orange); }
 .proj-card__body { flex:1 1 22rem; min-width:0; }
 .proj-card__name { font-weight: var(--fw-medium); color: var(--ink-brand); }
 .proj-card__meta { font-size: var(--fs-small); color: var(--ink-muted); }
@@ -1195,15 +1196,59 @@ function readState(){
   return s;
 }
 
+/* ---- what a saved project may hold ----
+   The same rules the server applies (src/app.js STATE_CHOICES / STATE_RANGES):
+   select fields must be one of the page's own options, number fields a finite
+   number in range (or blank). A record from another rep, an old file or the
+   server is checked before it is drawn, loaded or imported. */
+const SELECTS = ["inPurity","inPsi","inAir"];
+const STATE_RANGES = {inFlow:[0,100000], inGp:[0,80], iLin:[0,100000000], iKwh:[0,10], iHrs:[1,168], iCap:[0,100000000]};
+const LABEL = {inFlow:"flow", inPurity:"purity", inPsi:"feed air pressure", inAir:"feed air supplier", inGp:"gross profit",
+               iLin:"LIN spend", iKwh:"electricity rate", iHrs:"operating hours", iCap:"capital"};
+const choiceOK = (id, v) => (typeof v === "string" || typeof v === "number") &&
+  [...el(id).options].some(o => o.value === String(v));
+const numOK = (id, v) => v === "" || ((typeof v === "number" || (typeof v === "string" && v.trim() !== "")) &&
+  Number.isFinite(Number(v)));
+const inRange = (id, v) => v === "" || (Number(v) >= STATE_RANGES[id][0] && Number(v) <= STATE_RANGES[id][1]);
+
+/* Fields whose value this page cannot show or size from (unknown option, not a number). */
+function unsupported(s){
+  if (!s || typeof s !== "object") return ["inputs"];
+  return SELECTS.filter(id => s[id] !== undefined && !choiceOK(id, s[id]))
+    .concat(Object.keys(STATE_RANGES).filter(id => s[id] !== undefined && !numOK(id, s[id])));
+}
+/* Why a saved record cannot be summarised or loaded, or null. Looser than
+   stateProblem(): a number outside the input's range still sizes. */
+function unreadable(s){
+  const bad = unsupported(s);
+  if (bad.length) return "unsupported " + bad.map(id => LABEL[id] || id).join(", ");
+  const missing = ["inPurity","inPsi"].filter(id => s[id] === undefined);
+  return missing.length ? "no " + missing.map(id => LABEL[id]).join(", ") : null;
+}
+/* Why the server would refuse these inputs, or null. */
+function stateProblem(s){
+  const bad = unsupported(s);
+  if (bad.length) return "unsupported " + bad.map(id => LABEL[id] || id).join(", ");
+  const missing = ["inFlow","inPurity","inPsi"].filter(id => s[id] === undefined);
+  if (missing.length) return "no " + missing.map(id => LABEL[id]).join(", ");
+  const out = Object.keys(STATE_RANGES).filter(id => s[id] !== undefined && !inRange(id, s[id]));
+  if (out.length) return out.map(id => `${LABEL[id]} must be ${STATE_RANGES[id][0]} to ${STATE_RANGES[id][1]}`).join("; ");
+  return null;
+}
+
+/* Returns the fields it left alone because the value is not one this page offers. */
 function applyState(s){
-  if (!s) return;
-  F1.forEach(id => { if (s[id] !== undefined) el(id).value = s[id]; });
+  if (!s) return [];
+  const bad = unsupported(s);
+  const use = id => s[id] !== undefined && !bad.includes(id);
+  F1.forEach(id => { if (use(id)) el(id).value = s[id]; });
   refresh();                                   /* tab 1 first: tab 2 carries from it */
-  ["iLin","iKwh","iHrs"].forEach(id => { if (s[id] !== undefined) el(id).value = s[id]; });
+  ["iLin","iKwh","iHrs"].forEach(id => { if (use(id)) el(id).value = s[id]; });
   const cap = el("iCap");
-  if (s.capTouched){ cap.value = s.iCap || ""; cap.dataset.touched = "1"; }
+  if (s.capTouched && !bad.includes("iCap")){ cap.value = s.iCap || ""; cap.dataset.touched = "1"; }
   else { delete cap.dataset.touched; cap.value = ""; }
   payback();                                   /* refills capital when untouched */
+  return bad;
 }
 
 /* ---- autosave ---- */
@@ -1250,7 +1295,7 @@ function writeAll(list){
 let syncChain = Promise.resolve();
 function syncServer(puts, dels){
   syncChain = syncChain.then(async () => {
-    let failed = 0, conflict = null;
+    let failed = 0, conflict = null, refused = null;
     for (const p of puts){
       try {
         const r = await fetch("/api/projects/" + encodeURIComponent(p.id), {
@@ -1259,6 +1304,7 @@ function syncServer(puts, dels){
         });
         if (r.status === 401) return signedOut();
         if (r.status === 409){ conflict = p.name; continue; }
+        if (r.status === 400){ refused = [p.name, ((await r.json().catch(() => ({}))).error) || "invalid project"]; continue; }
         if (!r.ok){ failed++; continue; }
       } catch(e){ failed++; }
     }
@@ -1269,9 +1315,10 @@ function syncServer(puts, dels){
         if (!r.ok && r.status !== 404) failed++;
       } catch(e){ failed++; }
     }
-    if (conflict || failed){
+    if (conflict || failed || refused){
       await reloadProjects();
       if (conflict) flash(`Someone on the team already has a project called "${conflict}". Load theirs or pick another name.`, true);
+      else if (refused) flash(`The server did not save "${refused[0]}": ${refused[1]}.`, true);
       else flash("Could not reach the server, so that change was not saved. Check your connection and try again.", true);
     }
   });
@@ -1352,11 +1399,20 @@ function renderProjects(){
     return;
   }
   wrap.innerHTML = list.map(pr => {
-    const [head, line] = projSummary(pr.s);
+    let head, line, ok = true;
+    const why = unreadable(pr.s);
+    try {
+      if (why) throw new Error(why);
+      [head, line] = projSummary(pr.s);
+    } catch(e){
+      ok = false;
+      head = "Unreadable project";
+      line = esc(`Saved with ${why || "values this toolkit cannot size"}. Delete it and size the job again.`);
+    }
     const d = new Date(pr.at);
     const when = isNaN(d) ? "" : d.toLocaleDateString("en-US", {month:"short", day:"numeric"}) +
                  " " + d.toLocaleTimeString("en-US", {hour:"numeric", minute:"2-digit"});
-    return `<div class="proj-card${pr.id === activeId ? " is-active" : ""}">
+    return `<div class="proj-card${pr.id === activeId ? " is-active" : ""}${ok ? "" : " is-bad"}">
       <div class="proj-card__body">
         <div><span class="proj-card__name">${esc(pr.name)}</span>
              <span class="proj-card__meta"> &middot; ${esc(when)}${pr.rep ? " &middot; " + esc(pr.rep) : ""}</span></div>
@@ -1364,7 +1420,7 @@ function renderProjects(){
         <div class="proj-card__line">${line}</div>
       </div>
       <div class="proj-card__acts">
-        <button class="pci-btn pci-btn--secondary" type="button" data-load="${esc(pr.id)}">Load</button>
+        <button class="pci-btn pci-btn--secondary" type="button" data-load="${esc(pr.id)}"${ok ? "" : " disabled"}>Load</button>
         <button class="pci-btn ${pr.id === pendingDel ? "pci-btn--danger" : "pci-btn--ghost"}" type="button" data-del="${esc(pr.id)}">${pr.id === pendingDel ? "Sure?" : "Delete"}</button>
       </div></div>`;
   }).join("");
@@ -1392,6 +1448,8 @@ function saveProject(){
   const i    = list.findIndex(pr => pr.name.toLowerCase() === name.toLowerCase());
   const rec  = { id: (i >= 0 ? list[i].id : newId()),
                  name, at: Date.now(), v: VER, s: readState() };
+  const bad = stateProblem(rec.s);
+  if (bad){ flash("Not saved: " + bad, true); return; }
   if (i >= 0) list[i] = rec; else list.unshift(rec);
   list.sort((a,b) => b.at - a.at);
 
@@ -1411,11 +1469,12 @@ el("projList").addEventListener("click", e => {
   if (loadId){
     const pr = loadAll().find(x => x.id === loadId);
     if (!pr) return;
-    applyState(pr.s);
+    const skipped = applyState(pr.s);
     el("projName").value = pr.name;
     activeId = pr.id;
     showTab(1);
-    flash("Loaded " + pr.name);
+    if (skipped.length) flash(`Loaded ${pr.name}, but its ${skipped.map(id => LABEL[id] || id).join(", ")} is not one this toolkit offers, so that was left as it was`, true);
+    else flash("Loaded " + pr.name);
     saveDraft();
   }
   if (delId){
@@ -1537,7 +1596,7 @@ function parseFile(text){
   let d; try { d = JSON.parse(text); } catch(e){ throw new Error("That file is not readable as JSON."); }
   if (!d || d.format !== FMT || !Array.isArray(d.projects))
     throw new Error("That is not an NGU projects file.");
-  return d.projects.filter(p => p && p.name && p.s);
+  return d.projects.filter(p => p && typeof p === "object" && p.name && p.s);
 }
 
 /* Merge on the project name, the same identity Save uses. Newest wins.
@@ -1549,6 +1608,7 @@ function mergeIn(incoming){
   const byName = new Map(list.map(p => [p.name.trim().toLowerCase(), p]));
   const ids = new Set(list.map(p => p.id));
   let added = 0, updated = 0, same = 0;
+  const skipped = [];
   incoming.forEach(raw => {
     const p = {
       id: (typeof raw.id === "string" && ID_OK.test(raw.id) && !ids.has(raw.id)) ? raw.id : newId(),
@@ -1556,6 +1616,7 @@ function mergeIn(incoming){
       v: String(raw.v || "").slice(0, 10), s: Object.assign({}, raw.s)
     };
     if (!p.name) return;
+    if (stateProblem(raw.s)){ skipped.push(p.name); return; }
     const k = p.name.toLowerCase(), cur = byName.get(k);
     if (!cur){ list.push(p); byName.set(k, p); ids.add(p.id); added++; }
     else if ((p.at || 0) > (cur.at || 0)){ Object.assign(cur, p, {id: cur.id}); updated++; }
@@ -1563,7 +1624,7 @@ function mergeIn(incoming){
   });
   list.sort((a,b) => b.at - a.at);
   writeAll(list);
-  return {added, updated, same};
+  return {added, updated, same, skipped};
 }
 
 /* ---- write ---- */
@@ -1633,7 +1694,9 @@ function adopt(text){
   const r = mergeIn(inc);
   activeId = null;
   renderProjects();
-  flash(`${r.added} added, ${r.updated} updated, ${r.same} already current`);
+  const n = r.skipped.length;
+  flash(`${r.added} added, ${r.updated} updated, ${r.same} already current` +
+        (n ? `. Skipped ${n} with values this toolkit does not offer: ${r.skipped.join(", ")}` : ""), n > 0);
 }
 
 /* ---- fallback download ---- */
