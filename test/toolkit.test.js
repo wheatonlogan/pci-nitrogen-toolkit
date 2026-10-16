@@ -1,15 +1,37 @@
-// Browser tests: the hosted toolkit in headless Chromium against a real server and Postgres.
+// Browser tests: the hosted toolkit in headless Chromium against a real server
+// (Postgres when TEST_DATABASE_URL is set, otherwise the in-memory stand-in).
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { chromium } from "playwright-core";
-import { startServer, PASSWORD, skipNoDb, ROOT } from "./helpers.js";
+import { startServer, PASSWORD, ROOT } from "./helpers.js";
 
-const EXE = process.env.CHROMIUM_PATH ||
-  ["/opt/pw-browsers/chromium-1194/chrome-linux/chrome", "/usr/bin/chromium", "/usr/bin/google-chrome"].find((p) => fs.existsSync(p));
-const skip = skipNoDb || (!EXE && "set CHROMIUM_PATH to a Chromium or Chrome binary to run");
+/** A Chromium or Chrome to drive: env override, Playwright's own, then the usual Linux and macOS installs. */
+function findChromium() {
+  const env = process.env.CHROMIUM_PATH || process.env.CHROME_PATH;
+  if (env) return env;
+  let bundled = null;
+  try { bundled = chromium.executablePath(); } catch {}
+  // Any Playwright-downloaded Chromium, newest first, in case it is not the revision playwright-core expects.
+  const caches = [process.env.PLAYWRIGHT_BROWSERS_PATH, "/opt/pw-browsers",
+    path.join(os.homedir(), "Library", "Caches", "ms-playwright"), path.join(os.homedir(), ".cache", "ms-playwright")];
+  const cached = caches.filter((d) => d && fs.existsSync(d)).flatMap((d) =>
+    fs.readdirSync(d).filter((n) => /^chromium-\d+$/.test(n))
+      .sort((a, b) => Number(b.split("-")[1]) - Number(a.split("-")[1]))
+      .flatMap((n) => [
+        path.join(d, n, "chrome-linux", "chrome"),
+        path.join(d, n, "chrome-mac-arm64", "Google Chrome for Testing.app", "Contents", "MacOS", "Google Chrome for Testing"),
+        path.join(d, n, "chrome-mac", "Google Chrome for Testing.app", "Contents", "MacOS", "Google Chrome for Testing"),
+        path.join(d, n, "chrome-mac", "Chromium.app", "Contents", "MacOS", "Chromium"),
+      ]));
+  return [bundled, ...cached, "/usr/bin/chromium", "/usr/bin/google-chrome",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"].find((p) => p && fs.existsSync(p));
+}
+const EXE = findChromium();
+const skip = !EXE && "set CHROMIUM_PATH (or CHROME_PATH) to a Chromium or Chrome binary to run";
 const opts = { skip };
 
 let srv, browser;

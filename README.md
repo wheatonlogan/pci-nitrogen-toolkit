@@ -38,10 +38,11 @@ seed/projects.json    stock projects (Katrium, AGI) added on first start only
 
 ```bash
 npm install
-TEST_DATABASE_URL=postgres://user@localhost:5432/ngu_test npm test
+npm test                                                            # in-memory database
+TEST_DATABASE_URL=postgres://user@localhost:5432/ngu_test npm test  # real Postgres
 ```
 
-The test run drops and recreates this app's tables in that database, so point it at a scratch database. The browser tests need Chromium. They look in the usual places, or you can set `CHROMIUM_PATH`.
+Without `TEST_DATABASE_URL` the tests run against an in-memory stand-in for the database (`test/memdb.js`). With it, the run drops and recreates this app's tables in that database, so point it at a scratch database; run it that way before pushing a change to `src/db.js`. The browser tests need Chromium or Chrome. They look for Playwright's download and the usual Linux and macOS installs, or you can set `CHROMIUM_PATH` (or `CHROME_PATH`).
 
 ## Changing the model or pricing
 

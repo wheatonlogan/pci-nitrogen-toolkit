@@ -1,13 +1,12 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import path from "node:path";
-import { startServer, signIn, skipNoDb, ROOT } from "./helpers.js";
+import { startServer, signIn, ROOT } from "./helpers.js";
 
 let srv, cookie;
-const opts = { skip: skipNoDb };
+const opts = {};
 
 before(async () => {
-  if (skipNoDb) return;
   srv = await startServer();
   cookie = (await signIn(srv.base)).cookie;
 });
