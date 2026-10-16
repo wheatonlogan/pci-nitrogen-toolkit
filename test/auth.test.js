@@ -1,8 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import { identity, encodeSession, decodeSession, checkPassword } from "../src/auth.js";
 
 process.env.SESSION_SECRET = "unit-secret";
+process.env.SITE_PASSWORD = "unit-password";
 
 test("identity needs a name and a valid email", () => {
   assert.deepEqual(identity({ name: " Logan ", email: "Logan@PCIGases.com " }), { name: "Logan", email: "logan@pcigases.com" });
@@ -39,4 +41,43 @@ test("no SITE_PASSWORD means nobody signs in", () => {
   assert.equal(checkPassword("right"), true);
   assert.equal(checkPassword("wrong"), false);
   if (saved === undefined) delete process.env.SITE_PASSWORD; else process.env.SITE_PASSWORD = saved;
+});
+
+test("changing SITE_PASSWORD ends sessions issued under the old one", () => {
+  const v = encodeSession({ name: "Logan", email: "l@p.com" });
+  process.env.SITE_PASSWORD = "rotated-password";
+  try {
+    assert.equal(decodeSession(v), null);
+    assert.deepEqual(decodeSession(encodeSession({ name: "Logan", email: "l@p.com" })), { name: "Logan", email: "l@p.com" });
+  } finally {
+    process.env.SITE_PASSWORD = "unit-password";
+  }
+  assert.deepEqual(decodeSession(v), { name: "Logan", email: "l@p.com" });
+});
+
+test("a v2 cookie with a forged password tag is rejected", () => {
+  const [, , exp, body] = encodeSession({ name: "Logan", email: "l@p.com" }).split(".");
+  const payload = `v2.${"0".repeat(16)}.${exp}.${body}`;
+  const sig = crypto.createHmac("sha256", "unit-secret").update(payload).digest("base64url");
+  assert.equal(decodeSession(`${payload}.${sig}`), null);
+});
+
+test("cookies from before the password tag stay valid until they expire", () => {
+  const legacy = (exp) => {
+    const body = Buffer.from(JSON.stringify({ name: "Old", email: "o@p.com" })).toString("base64url");
+    const payload = `${exp}.${body}`;
+    return `${payload}.${crypto.createHmac("sha256", "unit-secret").update(payload).digest("base64url")}`;
+  };
+  assert.deepEqual(decodeSession(legacy(Date.now() + 60_000)), { name: "Old", email: "o@p.com" });
+  assert.equal(decodeSession(legacy(Date.now() - 1)), null);
+});
+
+test("no SITE_PASSWORD means no session is valid", () => {
+  const v = encodeSession({ name: "Logan", email: "l@p.com" });
+  delete process.env.SITE_PASSWORD;
+  try {
+    assert.equal(decodeSession(v), null);
+  } finally {
+    process.env.SITE_PASSWORD = "unit-password";
+  }
 });

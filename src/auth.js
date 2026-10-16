@@ -35,19 +35,31 @@ export function identity(form) {
   return { name, email };
 }
 
+// A keyed hash of the password a session signed in with. It is in the signed cookie, so
+// changing SITE_PASSWORD signs everyone out.
+const passwordTag = () => sign(`pw.${process.env.SITE_PASSWORD || ""}`).slice(0, 16);
+
+/** Cookie value: "v2.<password tag>.<exp>.<user>.<sig>". */
 export function encodeSession(user, now = Date.now()) {
   const exp = String(now + MAX_AGE * 1000);
   const body = Buffer.from(JSON.stringify(user)).toString("base64url");
-  const payload = `${exp}.${body}`;
+  const payload = `v2.${passwordTag()}.${exp}.${body}`;
   return `${payload}.${sign(payload)}`;
 }
 
+/** v2 cookies need the current password's tag; older "<exp>.<user>.<sig>" cookies (issued
+ *  before the tag existed) stay valid until they expire. */
 export function decodeSession(value, now = Date.now()) {
-  if (!value) return null;
+  if (!value || !process.env.SITE_PASSWORD) return null;
   const parts = String(value).split(".");
-  if (parts.length !== 3) return null;
-  const [exp, body, sig] = parts;
-  if (!safeEqual(sig, sign(`${exp}.${body}`))) return null;
+  let exp, body;
+  if (parts.length === 3) {
+    [exp, body] = parts;
+  } else if (parts.length === 5 && parts[0] === "v2") {
+    if (!safeEqual(parts[1], passwordTag())) return null;
+    [, , exp, body] = parts;
+  } else return null;
+  if (!safeEqual(parts.at(-1), sign(parts.slice(0, -1).join(".")))) return null;
   if (!(Number(exp) > now)) return null;
   try {
     const u = JSON.parse(Buffer.from(body, "base64url").toString("utf8"));

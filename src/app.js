@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { Hono } from "hono";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { checkPassword, identity, startSession, endSession, currentUser, requireUser } from "./auth.js";
+import { createLoginLimiter, clientKeys } from "./login-limit.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const pub = (f) => path.join(ROOT, "public", f);
@@ -90,13 +91,17 @@ export function cleanSizing(b) {
   return e.flow === null || e.purity === null || e.psi === null ? null : e;
 }
 
-const csvCell = (v) => {
+// Excel runs a cell that starts with = + - @ (or a tab or CR it strips first) as a formula, so
+// text like that (a rep or project name) gets a leading ' to open as text. Numbers are left as is.
+const FORMULA_START = /^[=+\-@\t\r]/;
+export const csvCell = (v) => {
   if (v === null || v === undefined) return "";
-  const s = v instanceof Date ? v.toISOString() : String(v);
-  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  let s = v instanceof Date ? v.toISOString() : String(v);
+  if (typeof v === "string" && FORMULA_START.test(s)) s = `'${s}`;
+  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 };
 
-export function createApp(db) {
+export function createApp(db, { loginLimiter = createLoginLimiter() } = {}) {
   const app = new Hono();
 
   app.get("/healthz", async (c) => {
@@ -109,7 +114,18 @@ export function createApp(db) {
   app.post("/login", async (c) => {
     const form = await c.req.parseBody();
     const user = identity(form);
-    if (!checkPassword(form.password || "")) return c.redirect("/login?error=password");
+    const keys = clientKeys(c.req.raw.headers, c.env?.incoming?.socket?.remoteAddress);
+    // No await from here on: check, compare and count happen in one turn of the event loop.
+    const gate = loginLimiter.check(keys);
+    if (!gate.ok) {
+      c.header("Retry-After", String(gate.retryAfter));
+      return c.redirect("/login?error=wait");
+    }
+    if (!checkPassword(String(form.password || ""))) {
+      loginLimiter.fail(keys);
+      return c.redirect("/login?error=password");
+    }
+    loginLimiter.succeed(keys);
     if (!user) return c.redirect("/login?error=identity");
     startSession(c, user);
     return c.redirect("/");

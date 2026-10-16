@@ -39,6 +39,7 @@
       <input class="pci-input" type="password" name="password" autocomplete="current-password" required>
     </label>
     <p class="pci-hint ngu-error" id="errPassword" hidden>That password didn't work. Ask Marketing for the current one.</p>
+    <p class="pci-hint ngu-error" id="errWait" hidden>Too many attempts. Wait a minute and try again.</p>
     <p class="pci-hint ngu-error" id="errIdentity" hidden>Enter your name and a valid email so your saves are labelled.</p>
     <button class="pci-btn pci-btn--primary" type="submit">Sign in</button>
   </form>
@@ -47,6 +48,7 @@
   const e = new URLSearchParams(location.search).get("error");
   if (e === "password") document.getElementById("errPassword").hidden = false;
   if (e === "identity") document.getElementById("errIdentity").hidden = false;
+  if (e === "wait") document.getElementById("errWait").hidden = false;
   try {
     const f = document.forms[0], saved = JSON.parse(localStorage.getItem("ngu.who") || "null");
     if (saved) { f.name.value = saved.name || ""; f.email.value = saved.email || ""; if (saved.name) f.password.focus(); }
